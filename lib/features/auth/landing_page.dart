@@ -1,156 +1,132 @@
-// TODO Implement this library.
-import 'package:flutter/material.dart'; // on a besoin des widgets Material
+import 'package:flutter/material.dart';
 
-// On crée un widget pour notre page d'accueil.
-// StatelessWidget = la page ne change pas toute seule (pas d'état).
 class LandingPage extends StatelessWidget {
-  const LandingPage({super.key}); // constructeur basique
+  const LandingPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // build : ici on décrit tous les widgets qui composent la page
     return Scaffold(
-      // Scaffold = structure de base d'une page (fond, appbar, body, etc.)
       body: SafeArea(
-        // SafeArea = évite que le contenu soit sous la barre de statut (heure, batterie)
         child: Padding(
-          // Padding = marge intérieure autour de la page
-          padding: const EdgeInsets.symmetric(
-            horizontal: 24, // 24 pixels à gauche et à droite
-            vertical: 16, // 16 pixels en haut et en bas
-          ),
+          padding: const EdgeInsets.all(20),
           child: Column(
-            // Column = on place les éléments les uns sous les autres
-            crossAxisAlignment: CrossAxisAlignment.start, // aligne à gauche
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --------- LIGNE DU HAUT : placeholder pour le logo ----------
+
+              // ---------------- LOGO ----------------
               Row(
-                // Row = widgets alignés à l'horizontale
-                mainAxisAlignment: MainAxisAlignment.end, // tout à droite
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Container(
-                    // Container = boîte rectangulaire (couleur, bord, padding)
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ), // marge interne du rectangle
+                    width: 70,   // Taille contrôlée
+                    height: 70,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF4B6BFB), // fond bleu
-                      borderRadius: BorderRadius.circular(16), // bords arrondis
+                      color: const Color(0xFF9CA3FF),
+                      shape: BoxShape.circle, // cercle parfait
                       boxShadow: [
-                        // petite ombre pour ressembler au Figma
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
+                          blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
                       ],
                     ),
-                    child: Image.asset(
-                      'lib/bilder/logo.png',
-                      width: 40,   // largeur du logo
-                      height: 40,  // hauteur du logo
+                    child: Padding(
+                      padding: const EdgeInsets.all(10), // espace interne
+                      child: Image.asset(
+                        'lib/bilder/logo2.png',
+                        fit: BoxFit.contain,
+                      ),
                     ),
-
                   ),
                 ],
               ),
 
-              const SizedBox(height: 16), // espace vertical de 16 px
+              const SizedBox(height: 30),
 
-              // --------- GRANDE ILLUSTRATION ---------
-              Container(
-                height: 260, // hauteur fixe
-                width: double.infinity, // prend toute la largeur
-                decoration: BoxDecoration(
-                  color: const Color(0xFFF3F4F6), // gris clair
-                  borderRadius: BorderRadius.circular(24), // bords arrondis
-                  border: Border.all(
-                    color: const Color(0xFFE5E7EB), // bordure très légère
-                  ),
-                ),
-                child: Center(
-                  // Center = centre son enfant
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    child: Image.asset(
-                      'lib/bilder/accueil1.png',
-                      fit: BoxFit.cover,   // l’image remplit tout le bloc
-                    ),
+              // ---------------- ILLUSTRATION ----------------
+              Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Image.asset(
+                    'lib/bilder/accueil1.png',
+                    width: double.infinity,
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
 
-              const SizedBox(height: 24), // espace sous l'illustration
+              //---------------- TEXTE ----------------
+              const SizedBox(height: 30),
 
-              // --------- TITRE PRINCIPAL ---------
               Center(
-                child: const Text(
-                  'Finde hier\nDeinen Traumjob',
+                child: Text('Deine Zukunft beginnt ',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontSize: 40, // grande taille
-                    fontWeight: FontWeight.w700, // très gras
-                    color: Color(0xFF1D4ED8), // bleu un peu foncé
+                    fontSize: 33,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF1D4ED8),
                   ),
-                ),
+                )
+              ),
+              Center(
+                  child: Text('heute',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 50,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1D4ED8),
+                    ),
+                  )
               ),
 
               const SizedBox(height: 16),
 
-              // --------- TEXTE EXPLICATIF ---------
               Center(
-                child: const Text(
-                  'Erkunden Sie alle bestehenden Jobrollen basierend \n'
-                      'auf Ihren Interessen und studieren Sie das Hauptfach',
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontSize: 15,
-                    height: 1.2, // espace entre les lignes
-                    color: Color(0xFF6B7280), // gris
-                  ),
-                ),
+                  child: Text('Entdecke Jobmöglichkeiten, die zu deinen Interessen und Stärken passen – schnell, einfach und persönlich',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontSize: 16,
+                      height: 1.4,
+                      color: Colors.black,
+                    ),
+                  )
               ),
 
-              const Spacer(), // pousse ce qui vient après vers le bas de l'écran
+              const SizedBox(height: 40),
 
-              // --------- BOUTONS EN BAS ---------
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // BOUTON LOGIN (bleu)
-                  Expanded(
-                    // Expanded = le bouton prend le maximum de largeur disponible
-                    child: Container(
-                      // Container juste pour ajouter une ombre plus jolie
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF4B6BFB).withOpacity(0.4),
-                            blurRadius: 16,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
+
+                  Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFF4B6BFB).withOpacity(0.3), // ombre bleue
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: SizedBox(
+                      width: 140,
+                      height: 50,
                       child: ElevatedButton(
-                        onPressed: () {
-                          // plus tard : navigation vers la page de login
-                          // pour l'instant on laisse vide
-                        },
+                        onPressed: () {},
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF4B6BFB), // bleu
-                          foregroundColor: Colors.white, // texte blanc
+                          foregroundColor: Colors.white,           // texte blanc
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
+                            borderRadius: BorderRadius.circular(14), // arrondi comme l’image
                           ),
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 14,
-                          ), // hauteur du bouton
-                          elevation: 0, // l'ombre vient du Container
+                          elevation: 0, // on enlève l’ombre native
                         ),
                         child: const Text(
-                          'Login',
+                          "Login",
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: 18,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -158,26 +134,24 @@ class LandingPage extends StatelessWidget {
                     ),
                   ),
 
-                  const SizedBox(width: 32), // espace entre Login et Register
+                  const SizedBox(width: 20),
 
-                  // TEXTE REGISTER (cliquable plus tard)
-                  TextButton(
-                    onPressed: () {
-                      // plus tard : navigation vers la page d'inscription
-                    },
-                    child: const Text(
-                      'Register',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  SizedBox(
+                    width: 140,
+                    height: 50,
+                    child: ElevatedButton(onPressed: (){},
+                        child: Text('Sich Registrieren',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
                     ),
                   ),
-                ],
-              ),
 
-              const SizedBox(height: 24), // petit espace en bas
+
+                ],
+              )
             ],
           ),
         ),
