@@ -69,6 +69,8 @@ class PageLogin extends StatelessWidget {
 
                   const SizedBox(height: 25),
 
+                  //------------ Email ----------------
+
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     height: 55,
@@ -103,6 +105,8 @@ class PageLogin extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 25),
+
+                  //------------ Passwort ----------------
 
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
