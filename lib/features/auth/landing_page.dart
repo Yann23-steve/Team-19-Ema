@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'page_login.dart';
+import 'registrieren_page.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -15,10 +17,10 @@ class LandingPage extends StatelessWidget {
 
               // ---------------- LOGO ----------------
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
-                    width: 70,   // Taille contrôlée
+                    width: 70,
                     height: 70,
                     decoration: BoxDecoration(
                       color: const Color(0xFF9CA3FF),
@@ -80,7 +82,7 @@ class LandingPage extends StatelessWidget {
                   )
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 25),
 
               Center(
                   child: Text('Entdecke Jobmöglichkeiten, die zu deinen Interessen und Stärken passen – schnell, einfach und persönlich',
@@ -94,7 +96,7 @@ class LandingPage extends StatelessWidget {
                   )
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 60),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -114,12 +116,15 @@ class LandingPage extends StatelessWidget {
                       width: 140,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                            Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => const PageLogin()),);
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF4B6BFB), // bleu
                           foregroundColor: Colors.white,           // texte blanc
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14), // arrondi comme l’image
+                            borderRadius: BorderRadius.circular(30), // arrondi comme l’image
                           ),
                           elevation: 0, // on enlève l’ombre native
                         ),
@@ -139,8 +144,13 @@ class LandingPage extends StatelessWidget {
                   SizedBox(
                     width: 140,
                     height: 50,
-                    child: ElevatedButton(onPressed: (){},
-                        child: Text('Sich Registrieren',
+                    child: ElevatedButton(onPressed: (){
+                      Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => const PageRegistrieren()
+                        ),
+                      );
+                    },
+                        child: Text('Registrieren',
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
