@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:job_suche/features/auth/passwort_vergessen.dart';
+import '../home/home.dart';
+import '../navigation/navigation.dart';
 import 'registrieren_page.dart';
 
 class PageLogin extends StatelessWidget {
@@ -17,24 +20,25 @@ class PageLogin extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Container(
-                        width: 70,   // Taille contrôlée
                         height: 70,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF9CA3FF),
-                          shape: BoxShape.circle, // cercle parfait
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
                         child: Padding(
                           padding: const EdgeInsets.all(10), // espace interne
-                          child: Image.asset(
-                            'lib/bilder/logo2.png',
-                            fit: BoxFit.contain,
+                          child: Row(
+                            children: [
+                              Text('Job',
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF4B6BFB),
+                                ),),
+                              Text('Suche',
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -148,8 +152,8 @@ class PageLogin extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        // Ici tu mettras la navigation vers la page "forgot password"
-                        print("Forgot password clicked");
+                        Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => const PasswortVergessen()),);
                       },
                       child: const Text(
                         "Forgot your password?",
@@ -179,9 +183,10 @@ class PageLogin extends StatelessWidget {
                       height: 55,
                       child: ElevatedButton(
                         onPressed: () {
-                          //ici on dois mettre ce qui dois nous emmener sur la page principale du site
-
-                        },
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => const Navigation()),
+                          ); },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF4B6BFB), // bleu
                           foregroundColor: Colors.white,           // texte blanc

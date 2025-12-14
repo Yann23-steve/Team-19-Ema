@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:job_suche/features/auth/page_login.dart';
+import 'package:job_suche/features/home/home.dart';
 import 'package:job_suche/features/utils/fonction_verification.dart';
+
+import '../navigation/navigation.dart';
 
 class PageRegistrieren extends StatefulWidget {
   const PageRegistrieren({super.key});
@@ -87,24 +90,25 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Container(
-                        width: 70, // Taille contrôlée
                         height: 70,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF9CA3FF),
-                          shape: BoxShape.circle, // cercle parfait
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
                         child: Padding(
                           padding: const EdgeInsets.all(10), // espace interne
-                          child: Image.asset(
-                            'lib/bilder/logo2.png',
-                            fit: BoxFit.contain,
+                          child: Row(
+                            children: [
+                              Text('Job',
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF4B6BFB),
+                                ),),
+                              Text('Suche',
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -171,6 +175,36 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                     ),
                   ),
 
+                  const SizedBox(height: 25),
+                  //---------- Name -----------
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    height: 55,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F6FA),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(
+                        color: const Color(0xFF1D4ED8),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Row(
+                      children: const [
+                        Expanded(
+                          child: TextField(
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "Last Name",
+                              hintStyle: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 25),
 
 // -------- Street + Number (side-by-side) --------
@@ -506,6 +540,18 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                       child: ElevatedButton(
                         onPressed: () {
                           validateInputs();
+                          if(emailError == null &&
+                          passwordError == null &&
+                          postleitzahlError == null &&
+                          houseNummerError == null
+                          ){
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => const Navigation()),
+                            );
+                          }
+
+
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF4B6BFB), // bleu

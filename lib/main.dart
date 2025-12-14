@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Roboto', // facultatif, si tu as ajouté cette police
       ),
       home:
+
       const LandingPage(), // première page affichée = notre LandingPage
     );
   }

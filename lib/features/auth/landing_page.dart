@@ -20,27 +20,28 @@ class LandingPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
-                    width: 70,
                     height: 70,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF9CA3FF),
-                      shape: BoxShape.circle, // cercle parfait
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 12,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(10), // espace interne
-                      child: Image.asset(
-                        'lib/bilder/logo2.png',
-                        fit: BoxFit.contain,
+                      child: Row(
+                        children: [
+                          Text('Job',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF4B6BFB),
+                            ),),
+                          Text('Suche',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
 
@@ -62,7 +63,7 @@ class LandingPage extends StatelessWidget {
               const SizedBox(height: 30),
 
               Center(
-                child: Text('Deine Zukunft beginnt ',
+                child: Text('Discover your\n Dream Job here',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 33,
@@ -71,21 +72,11 @@ class LandingPage extends StatelessWidget {
                   ),
                 )
               ),
-              Center(
-                  child: Text('heute',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 50,
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFF1D4ED8),
-                    ),
-                  )
-              ),
 
               const SizedBox(height: 25),
 
               Center(
-                  child: Text('Entdecke Jobmöglichkeiten, die zu deinen Interessen und Stärken passen – schnell, einfach und persönlich',
+                  child: Text('Explore all the existing job roles based on \nyour interest and study mayor',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontStyle: FontStyle.italic,
@@ -150,7 +141,7 @@ class LandingPage extends StatelessWidget {
                         ),
                       );
                     },
-                        child: Text('Registrieren',
+                        child: Text('Register',
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
