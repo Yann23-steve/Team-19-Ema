@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:job_suche/features/auth/page_login.dart';
 import 'package:job_suche/features/home/home.dart';
 import 'package:job_suche/features/utils/fonction_verification.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../navigation/navigation.dart';
 
@@ -26,10 +28,17 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
   final TextEditingController _confirmPasswordController = TextEditingController();
   final TextEditingController _postleitzahlController = TextEditingController();
   final TextEditingController _houseNummerController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _streetController = TextEditingController();
+
+  String? firstNameError;
+  String? lastNameError;
   String? emailError;
   String? passwordError;
   String? postleitzahlError;
   String? houseNummerError;
+  String? streetError;
 
   @override
   void dispose() {
@@ -41,9 +50,14 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
-    //--------------- Verification  email ---------------
+    //--------------- Verification  adresse ---------------
     _postleitzahlController.dispose();
     _houseNummerController.dispose();
+    _streetController.dispose();
+    //--------------- Verification  nom et prenom ---------------
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+
     super.dispose();
   }
 
@@ -158,18 +172,17 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                       ),
                     ),
                     child: Row(
-                      children: const [
+                      children: [
                         Expanded(
                           child: TextField(
-                            decoration: InputDecoration(
+                            controller: _firstNameController,
+                            decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: "First Name",
-                              hintStyle: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 16,
-                              ),
+                              hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
                             ),
                           ),
+
                         ),
                       ],
                     ),
@@ -189,18 +202,17 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                       ),
                     ),
                     child: Row(
-                      children: const [
+                      children: [
                         Expanded(
                           child: TextField(
-                            decoration: InputDecoration(
+                            controller: _lastNameController,
+                            decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: "Last Name",
-                              hintStyle: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 16,
-                              ),
+                              hintStyle: TextStyle(color: Colors.grey, fontSize: 16),
                             ),
                           ),
+
                         ),
                       ],
                     ),
@@ -225,8 +237,9 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                               width: 1.5,
                             ),
                           ),
-                          child: const TextField(
-                            decoration: InputDecoration(
+                          child: TextField(
+                            controller: _streetController,
+                            decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: "Street name",
                               hintStyle: TextStyle(
@@ -538,21 +551,70 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                     child: SizedBox(
                       height: 55,
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           validateInputs();
-                          if(emailError == null &&
-                          passwordError == null &&
-                          postleitzahlError == null &&
-                          houseNummerError == null
-                          ){
+
+                          if (emailError != null ||
+                              passwordError != null ||
+                              postleitzahlError != null ||
+                              houseNummerError != null) {
+                            return;
+                          }
+
+                          try {
+                            // 1) Créer le compte Auth
+                            final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                              email: _emailController.text.trim(),
+                              password: _passwordController.text.trim(),
+                            );
+
+                            final uid = cred.user!.uid;
+
+                            // 2) Enregistrer TOUTES les infos dans Firestore (users/{uid})
+                            await FirebaseFirestore.instance.collection('users').doc(uid).set({
+                              'uid': uid,
+                              'email': _emailController.text.trim(),
+
+                              'firstName': _firstNameController.text.trim(),
+                              'lastName': _lastNameController.text.trim(),
+
+                              'street': _streetController.text.trim(),
+                              'streetNumber': _postleitzahlController.text.trim(), // chez toi c’est "No."
+                              'postalCode': _houseNummerController.text.trim(),    // chez toi c’est "Postal code"
+
+                              'country': _countryController.text.trim(),
+                              'birthday': _birthdayController.text.trim(),
+
+                              'createdAt': FieldValue.serverTimestamp(),
+                            });
+
+                            // 3) Aller vers l'app
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(builder: (context) => const Navigation()),
                             );
+                          } on FirebaseAuthException catch (e) {
+                            String msg = "Registration failed";
+
+                            if (e.code == 'email-already-in-use') {
+                              msg = "This email is already used. Please login.";
+                            } else if (e.code == 'invalid-email') {
+                              msg = "Invalid email address.";
+                            } else if (e.code == 'weak-password') {
+                              msg = "Password is too weak.";
+                            }
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(msg)),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("An error occurred. Please try again.")),
+                            );
                           }
-
-
                         },
+
+
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF4B6BFB), // bleu
                           foregroundColor: Colors.white,           // texte blanc
