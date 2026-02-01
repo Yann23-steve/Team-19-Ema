@@ -1,31 +1,67 @@
-import 'package:flutter/material.dart'; // importe Flutter (les widgets)
-
-// on importe notre page que l'on a créée dans features/auth
+import 'package:flutter/material.dart';
+import 'app/app_theme.dart';
 import 'features/auth/landing_page.dart';
 
-// fonction main : point de départ de l'application
-void main() {
-  runApp(const MyApp()); // lance le widget racine MyApp
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await loadSavedTheme();
+  runApp(const MyApp());
 }
 
-// MyApp : widget principal de l'application
 class MyApp extends StatelessWidget {
-  const MyApp({super.key}); // constructeur avec une "key" optionnelle
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // build : décrit ce qu'on affiche à l'écran
-    return MaterialApp(
-      debugShowCheckedModeBanner: false, // enlève le petit bandeau "debug"
-      title: 'Job Suche', // titre de l'application
-      theme: ThemeData(
-        // ici on met juste quelques réglages simples
-        scaffoldBackgroundColor: Colors.white, // fond blanc pour les pages
-        fontFamily: 'Roboto', // facultatif, si tu as ajouté cette police
-      ),
-      home:
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: appThemeMode,
+      builder: (context, mode, _) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Job Suche',
 
-      const LandingPage(), // première page affichée = notre LandingPage
+          themeMode: mode,
+
+          theme: ThemeData(
+            brightness: Brightness.light,
+            scaffoldBackgroundColor: Colors.white,
+            fontFamily: 'Roboto',
+          ),
+
+          darkTheme: ThemeData(
+            brightness: Brightness.dark,
+            useMaterial3: true,
+
+            // Fond doux (gris, pas noir)
+            scaffoldBackgroundColor: const Color(0xFF1E2430),
+
+            // Cartes un peu plus claires que le fond
+            cardColor: const Color(0xFF2A3140),
+
+            // Séparateurs / bordures
+            dividerColor: const Color(0xFF3A4356),
+
+            // Icônes
+            iconTheme: const IconThemeData(
+              color: Color(0xFFE8ECF3),
+            ),
+
+            // Texte lisible (blanc cassé)
+            textTheme: const TextTheme(
+              titleLarge: TextStyle(color: Color(0xFFF5F7FB)),
+              titleMedium: TextStyle(color: Color(0xFFF5F7FB)),
+              titleSmall: TextStyle(color: Color(0xFFE8ECF3)),
+              bodyLarge: TextStyle(color: Color(0xFFE8ECF3)),
+              bodyMedium: TextStyle(color: Color(0xFFE8ECF3)),
+              bodySmall: TextStyle(color: Color(0xFFB6C0D1)),
+            ),
+          ),
+
+
+
+          home: const LandingPage(),
+        );
+      },
     );
   }
 }

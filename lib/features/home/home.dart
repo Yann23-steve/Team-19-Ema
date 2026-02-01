@@ -76,7 +76,7 @@ class HomePage extends StatelessWidget {
                      child: Container(
                        height: 140,
                        decoration: BoxDecoration(
-                         color: const Color(0xFFEFF3FF),
+                         color: Theme.of(context).cardColor,
                          borderRadius: BorderRadius.circular(20),
                        ),
                        child: Padding(
@@ -119,7 +119,7 @@ class HomePage extends StatelessWidget {
                     child: Container(
                       height: 140,
                       decoration: BoxDecoration(
-                        color: Color(0xFFF1FDF7),
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Padding(
@@ -173,7 +173,7 @@ class HomePage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
@@ -239,7 +239,7 @@ class HomePage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
@@ -305,7 +305,7 @@ class HomePage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
