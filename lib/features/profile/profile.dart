@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../app/app_theme.dart';
 import '../auth/landing_page.dart';
+import 'information_personnel_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -31,7 +32,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return SafeArea(
       child: StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance.collection('users').doc(user!.uid).snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(user!.uid)
+            .snapshots(),
         builder: (context, snapshot) {
           String fullName = "Your Name";
           String email = "your.email@example.com";
@@ -236,15 +240,15 @@ class _ProfilePageState extends State<ProfilePage> {
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
+                                  children: const [
+                                    Text(
                                       "3",
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w800,
                                       ),
                                     ),
-                                    const SizedBox(height: 2),
+                                    SizedBox(height: 2),
                                     Text(
                                       "Saved",
                                       style: TextStyle(
@@ -293,7 +297,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
+                                  children: const [
                                     Text(
                                       "1",
                                       style: TextStyle(
@@ -301,7 +305,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         fontWeight: FontWeight.w800,
                                       ),
                                     ),
-                                    const SizedBox(height: 2),
+                                    SizedBox(height: 2),
                                     Text(
                                       "Applied",
                                       style: TextStyle(
@@ -394,7 +398,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   const SizedBox(height: 14),
 
-                  // ===== Dark Mode card (comme tu avais) =====
+                  // ===== Dark Mode card =====
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -467,6 +471,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   const SizedBox(height: 14),
 
+                  // ✅ Personal information (cliquable)
                   _settingsItem(
                     context: context,
                     icon: Icons.person_outline,
@@ -474,6 +479,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     iconColor: const Color(0xFF1D4ED8),
                     title: "Personal information",
                     subtitle: "Name, email, phone",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const PersonalInformationPage(),
+                        ),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 14),
@@ -596,17 +609,19 @@ class _ProfilePageState extends State<ProfilePage> {
     required Color iconColor,
     required String title,
     required String subtitle,
+    VoidCallback? onTap,
   }) {
     return InkWell(
       borderRadius: BorderRadius.circular(16),
-      onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("$title – coming soon"),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      },
+      onTap: onTap ??
+              () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("$title – coming soon"),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          },
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(

@@ -32,8 +32,6 @@ class _PageLoginState extends State<PageLogin> {
       );
 
       final uid = cred.user!.uid;
-
-      // ✅ vérifier si le profil existe dans Firestore
       final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
       if (!doc.exists) {
@@ -48,7 +46,6 @@ class _PageLoginState extends State<PageLogin> {
         return;
       }
 
-      // ✅ tout est OK
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Navigation()),
@@ -56,7 +53,6 @@ class _PageLoginState extends State<PageLogin> {
     } on FirebaseAuthException catch (e) {
       String msg = "Email or password incorrect.";
 
-      // selon la config Firebase, ça peut être 'invalid-credential'
       if (e.code == 'user-not-found') {
         msg = "No account found. Please create an account.";
       } else if (e.code == 'wrong-password') {
@@ -75,6 +71,13 @@ class _PageLoginState extends State<PageLogin> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final fieldBg = isDark ? const Color(0xFF2A3140) : const Color(0xFFF5F6FA);
+    final fieldText = isDark ? const Color(0xFFE8ECF3) : Colors.black87;
+    final hintText = isDark ? const Color(0xFFB6C0D1) : Colors.grey;
+    final iconColor = isDark ? const Color(0xFFB6C0D1) : Colors.grey;
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -91,7 +94,7 @@ class _PageLoginState extends State<PageLogin> {
                       padding: const EdgeInsets.all(10),
                       child: Row(
                         children: [
-                          Text(
+                          const Text(
                             'Job',
                             style: TextStyle(
                               fontSize: 28,
@@ -104,7 +107,7 @@ class _PageLoginState extends State<PageLogin> {
                             style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: isDark ? const Color(0xFFE8ECF3) : Colors.black,
                             ),
                           ),
                         ],
@@ -116,7 +119,7 @@ class _PageLoginState extends State<PageLogin> {
 
               const SizedBox(height: 30),
 
-              Center(
+              const Center(
                 child: Text(
                   'Login here ',
                   textAlign: TextAlign.center,
@@ -137,7 +140,7 @@ class _PageLoginState extends State<PageLogin> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: isDark ? const Color(0xFFE8ECF3) : Colors.black87,
                   ),
                 ),
               ),
@@ -149,33 +152,24 @@ class _PageLoginState extends State<PageLogin> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 height: 55,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F6FA),
+                  color: fieldBg,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: const Color(0xFF1D4ED8),
-                    width: 1.5,
-                  ),
+                  border: Border.all(color: const Color(0xFF1D4ED8), width: 1.5),
                 ),
                 child: Row(
                   children: [
                     Expanded(
                       child: TextField(
                         controller: _emailController,
-                        decoration: const InputDecoration(
+                        style: TextStyle(color: fieldText),
+                        decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: "Email",
-                          hintStyle: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
-                          ),
+                          hintStyle: TextStyle(color: hintText, fontSize: 16),
                         ),
                       ),
                     ),
-                    Icon(
-                      Icons.person_outline,
-                      color: Colors.grey,
-                      size: 24,
-                    )
+                    Icon(Icons.person_outline, color: iconColor, size: 24),
                   ],
                 ),
               ),
@@ -187,12 +181,9 @@ class _PageLoginState extends State<PageLogin> {
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 height: 55,
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF5F6FA),
+                  color: fieldBg,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: const Color(0xFF1D4ED8),
-                    width: 1.5,
-                  ),
+                  border: Border.all(color: const Color(0xFF1D4ED8), width: 1.5),
                 ),
                 child: Row(
                   children: [
@@ -200,21 +191,15 @@ class _PageLoginState extends State<PageLogin> {
                       child: TextField(
                         controller: _passwordController,
                         obscureText: true,
-                        decoration: const InputDecoration(
+                        style: TextStyle(color: fieldText),
+                        decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: "Passwort",
-                          hintStyle: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 16,
-                          ),
+                          hintStyle: TextStyle(color: hintText, fontSize: 16),
                         ),
                       ),
                     ),
-                    Icon(
-                      Icons.lock_clock_outlined,
-                      color: Colors.grey,
-                      size: 24,
-                    )
+                    Icon(Icons.lock_clock_outlined, color: iconColor, size: 24),
                   ],
                 ),
               ),
@@ -285,7 +270,7 @@ class _PageLoginState extends State<PageLogin> {
                 child: Text(
                   'Don\'t have an Account?',
                   style: TextStyle(
-                    color: Colors.blueGrey,
+                    color: isDark ? const Color(0xFFB6C0D1) : Colors.blueGrey,
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                   ),
