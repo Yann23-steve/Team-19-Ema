@@ -1,49 +1,201 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class PasswortVergessen extends StatelessWidget {
+class PasswortVergessen extends StatefulWidget {
   const PasswortVergessen({super.key});
+
+  @override
+  State<PasswortVergessen> createState() => _PasswortVergessenState();
+}
+
+class _PasswortVergessenState extends State<PasswortVergessen> {
+  final TextEditingController _emailController = TextEditingController();
+  bool _loading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _resetPassword() async {
+    final email = _emailController.text.trim();
+
+    if (email.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please enter your email")),
+      );
+      return;
+    }
+
+    setState(() => _loading = true);
+
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Password reset email sent. Please check your inbox.",
+          ),
+        ),
+      );
+
+      Navigator.pop(context); // retour à la page login
+    } on FirebaseAuthException catch (e) {
+      String msg = "Something went wrong.";
+
+      if (e.code == 'user-not-found') {
+        msg = "No account found with this email.";
+      } else if (e.code == 'invalid-email') {
+        msg = "Invalid email address.";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg)),
+      );
+    } finally {
+      setState(() => _loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+        child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: 70,
-                  child: Padding(
-                    padding: const EdgeInsets.all(10), // espace interne
-                    child: Row(
-                      children: [
-                        Text('Job',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF4B6BFB),
-                          ),),
-                        Text('Suche',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                // ===== Header JobSuche =====
+                Row(
+                  children: [
+                    Container(
+                      height: 70,
+                      padding: const EdgeInsets.all(10),
+                      child: Row(
+                        children: const [
+                          Text(
+                            'Job',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF4B6BFB),
+                            ),
                           ),
-                        ),
-                      ],
+                          Text(
+                            'Suche',
+                            style: TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 30),
+
+                Center(
+                  child: Text(
+                    "Forgot Password",
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF1D4ED8),
                     ),
                   ),
                 ),
-                
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text('you can change your Passport her'),
-                )
 
+                const SizedBox(height: 15),
+
+                Center(
+                  child: Text(
+                    "Enter your email and we will\nsend you a reset link",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // ===== Email =====
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  height: 55,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5F6FA),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: const Color(0xFF1D4ED8),
+                      width: 1.5,
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                          ),
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "Email",
+                            hintStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const Icon(
+                        Icons.mail_outline,
+                        color: Colors.grey,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // ===== Reset Button =====
+                SizedBox(
+                  width: double.infinity,
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: _loading ? null : _resetPassword,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4B6BFB),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: _loading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                      "Send reset email",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
-          )
+          ),
+        ),
       ),
     );
   }
