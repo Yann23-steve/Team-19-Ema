@@ -6,6 +6,9 @@ import '../../app/app_theme.dart';
 import '../auth/landing_page.dart';
 import 'information_personnel_page.dart';
 
+// ✅ AJOUT: import de la page reset password
+import 'passwort_reset.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -16,10 +19,84 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   User? user;
 
+  // ✅ AJOUT: liste de villes (modifiable)
+  final List<String> _cities = const [
+    "Berlin",
+    "Frankfurt",
+    "Hamburg",
+    "Munich",
+    "Cologne",
+    "Stuttgart",
+    "Paris",
+    "Lyon",
+    "Zurich",
+    "Vienna",
+  ];
+
   @override
   void initState() {
     super.initState();
     user = FirebaseAuth.instance.currentUser;
+  }
+
+  // ✅ AJOUT: dialog pour choisir + enregistrer dans Firestore
+  Future<void> _openPreferredLocationDialog(String currentValue) async {
+    if (user == null) return;
+
+    String selected =
+    currentValue.trim().isEmpty ? _cities.first : currentValue.trim();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Preferred location"),
+          content: DropdownButtonFormField<String>(
+            value: _cities.contains(selected) ? selected : _cities.first,
+            items: _cities
+                .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                .toList(),
+            onChanged: (v) {
+              if (v != null) selected = v;
+            },
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: "Choose a city",
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                try {
+                  await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(user!.uid)
+                      .update({'preferredLocation': selected});
+
+                  if (mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Location saved ✅")),
+                    );
+                  }
+                } catch (e) {
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Something went wrong")),
+                    );
+                  }
+                }
+              },
+              child: const Text("Save"),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -40,6 +117,9 @@ class _ProfilePageState extends State<ProfilePage> {
           String fullName = "Your Name";
           String email = "your.email@example.com";
 
+          // ✅ AJOUT: preferred location
+          String preferredLocation = "";
+
           if (snapshot.hasData && snapshot.data!.exists) {
             final data = snapshot.data!.data() as Map<String, dynamic>;
 
@@ -48,6 +128,9 @@ class _ProfilePageState extends State<ProfilePage> {
 
             fullName = "$firstName $lastName".trim();
             email = (data['email'] ?? user!.email ?? '').toString();
+
+            // ✅ AJOUT: lire preferredLocation
+            preferredLocation = (data['preferredLocation'] ?? '').toString();
           } else {
             email = user!.email ?? "your.email@example.com";
           }
@@ -167,7 +250,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                email.isEmpty ? "your.email@example.com" : email,
+                                email.isEmpty
+                                    ? "your.email@example.com"
+                                    : email,
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey,
@@ -436,7 +521,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge
+                                      ?.color,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -446,7 +534,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: Theme.of(context).textTheme.bodySmall?.color,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.color,
                                 ),
                               ),
                             ],
@@ -491,13 +582,19 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   const SizedBox(height: 14),
 
+                  // ✅ AJOUT: Preferred location cliquable + affiche la valeur Firestore
                   _settingsItem(
                     context: context,
                     icon: Icons.location_on_outlined,
                     iconBg: const Color(0xFFEFF3FF),
                     iconColor: const Color(0xFF1D4ED8),
                     title: "Preferred location",
-                    subtitle: "City & remote preferences",
+                    subtitle: preferredLocation.trim().isEmpty
+                        ? "City & remote preferences"
+                        : preferredLocation,
+                    onTap: () {
+                      _openPreferredLocationDialog(preferredLocation);
+                    },
                   ),
 
                   const SizedBox(height: 14),
@@ -513,6 +610,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   const SizedBox(height: 14),
 
+                  // ✅ MODIF MINIMALE: ouvrir la page PasswortResetPage
                   _settingsItem(
                     context: context,
                     icon: Icons.lock_outline,
@@ -520,6 +618,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     iconColor: const Color(0xFF1D4ED8),
                     title: "Change password",
                     subtitle: "Update your password",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const PasswortResetPage(),
+                        ),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 14),
@@ -563,7 +669,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
                       Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => const LandingPage()),
+                        MaterialPageRoute(
+                            builder: (context) => const LandingPage()),
                             (route) => false,
                       );
                     },

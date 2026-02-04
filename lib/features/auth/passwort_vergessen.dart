@@ -34,25 +34,32 @@ class _PasswortVergessenState extends State<PasswortVergessen> {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Password reset email sent. Please check your inbox.",
-          ),
-        ),
+        const SnackBar(content: Text("Reset email sent. Check your inbox.")),
       );
 
-      Navigator.pop(context); // retour à la page login
+      Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
-      String msg = "Something went wrong.";
+      // ✅ message clair + code exact
+      String msg = "Error: ${e.code}";
 
       if (e.code == 'user-not-found') {
         msg = "No account found with this email.";
       } else if (e.code == 'invalid-email') {
         msg = "Invalid email address.";
+      } else if (e.code == 'network-request-failed') {
+        msg = "Network error. Check your internet connection.";
+      } else if (e.code == 'operation-not-allowed') {
+        msg = "Email/Password auth is not enabled in Firebase.";
+      } else if (e.code == 'too-many-requests') {
+        msg = "Too many requests. Try again later.";
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(msg)),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
       );
     } finally {
       setState(() => _loading = false);
@@ -69,7 +76,7 @@ class _PasswortVergessenState extends State<PasswortVergessen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ===== Header JobSuche =====
+                // Header
                 Row(
                   children: [
                     Container(
@@ -104,10 +111,10 @@ class _PasswortVergessenState extends State<PasswortVergessen> {
                 Center(
                   child: Text(
                     "Forgot Password",
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.w700,
-                      color: const Color(0xFF1D4ED8),
+                      color: Color(0xFF1D4ED8),
                     ),
                   ),
                 ),
@@ -127,7 +134,7 @@ class _PasswortVergessenState extends State<PasswortVergessen> {
 
                 const SizedBox(height: 30),
 
-                // ===== Email =====
+                // Email field
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   height: 55,
@@ -158,17 +165,14 @@ class _PasswortVergessenState extends State<PasswortVergessen> {
                           ),
                         ),
                       ),
-                      const Icon(
-                        Icons.mail_outline,
-                        color: Colors.grey,
-                      ),
+                      const Icon(Icons.mail_outline, color: Colors.grey),
                     ],
                   ),
                 ),
 
                 const SizedBox(height: 30),
 
-                // ===== Reset Button =====
+                // Button
                 SizedBox(
                   width: double.infinity,
                   height: 55,
