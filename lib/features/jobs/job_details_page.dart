@@ -15,7 +15,6 @@ class JobDetailsPage extends StatelessWidget {
     try {
       final ref = FirebaseFirestore.instance.collection('jobs').doc(job.id);
 
-      // ✅ re-check serveur
       final snap = await ref.get();
       final data = snap.data() as Map<String, dynamic>?;
 
@@ -48,7 +47,7 @@ class JobDetailsPage extends StatelessWidget {
       if (context.mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Job confirmed ✅")),
+          const SnackBar(content: Text("Job confirmed ")),
         );
       }
     } catch (e) {
@@ -89,7 +88,6 @@ class JobDetailsPage extends StatelessWidget {
     try {
       final ref = FirebaseFirestore.instance.collection('jobs').doc(job.id);
 
-      // ✅ re-check serveur + sécuriser: seulement si c'est toi
       final snap = await ref.get();
       final data = snap.data() as Map<String, dynamic>?;
 
@@ -106,7 +104,6 @@ class JobDetailsPage extends StatelessWidget {
         return;
       }
 
-      // ✅ remettre en open
       await ref.update({
         'status': 'open',
         'takenBy': FieldValue.delete(),
@@ -116,7 +113,7 @@ class JobDetailsPage extends StatelessWidget {
       if (context.mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Job cancelled ✅ Now available again.")),
+          const SnackBar(content: Text("Job cancelled  Now available again.")),
         );
       }
     } catch (e) {
@@ -137,7 +134,6 @@ class JobDetailsPage extends StatelessWidget {
     final isMine =
         user != null && job.takenBy != null && job.takenBy == user.uid;
 
-    // ✅ logique bouton
     final bool canConfirm = !isTaken;
     final bool canCancel = isTaken && isMine;
     final bool takenByOther = isTaken && !isMine;

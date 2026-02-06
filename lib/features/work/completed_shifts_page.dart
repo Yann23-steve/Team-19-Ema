@@ -146,8 +146,6 @@ class CompletedShiftsPage extends StatelessWidget {
                               return InkWell(
                                 borderRadius: BorderRadius.circular(16),
                                 onTap: () async {
-                                  // On a besoin d'un JobItem pour ouvrir HoursEditorPage (qui utilise job.id + salaryPerHour)
-                                  // Donc on récupère le job côté Firestore
                                   final jobSnap = await FirebaseFirestore.instance
                                       .collection('jobs')
                                       .doc(doc.id)

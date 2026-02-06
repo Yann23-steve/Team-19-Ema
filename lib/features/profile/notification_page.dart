@@ -120,7 +120,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Notifications enabled ✅")),
+          const SnackBar(content: Text("Notifications enabled ")),
         );
       }
     } catch (_) {
@@ -136,8 +136,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Future<void> _disableNotifications() async {
     setState(() => _loading = true);
     try {
-      // On ne peut pas “retirer” la permission depuis l’app,
-      // mais on désactive côté app + backend (on retire token)
       _token = null;
 
       setState(() => _loading = false);
@@ -328,7 +326,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     Expanded(
                       child: Text(
                         _notificationsEnabled
-                            ? "FCM token saved ✅"
+                            ? "FCM token saved "
                             : "FCM token not stored (notifications disabled)",
                         style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
                       ),

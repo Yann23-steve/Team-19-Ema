@@ -39,7 +39,6 @@ class _PasswortVergessenState extends State<PasswortVergessen> {
 
       Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
-      // ✅ message clair + code exact
       String msg = "Error: ${e.code}";
 
       if (e.code == 'user-not-found') {

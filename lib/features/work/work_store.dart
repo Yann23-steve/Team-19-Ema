@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import '../jobs/jobs_data.dart';
 
-/// ✅ My Shifts = jobs sélectionnés (à faire)
 ValueNotifier<List<JobItem>> myAssignments = ValueNotifier<List<JobItem>>([]);
 
-/// ✅ My Work Hours = jobs terminés (plus tard)
 ValueNotifier<List<JobItem>> myWorkHours = ValueNotifier<List<JobItem>>([]);
 
 void addToAssignments(JobItem job) {

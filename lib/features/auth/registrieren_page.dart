@@ -15,42 +15,79 @@ class PageRegistrieren extends StatefulWidget {
 
 class _PageRegistrierenState extends State<PageRegistrieren> {
   final TextEditingController _birthdayController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
 
-  final List<String> _countries = [
-    'Germany', 'France', 'Switzerland', 'Austria', 'Belgium',
-    'Netherlands', 'Italy', 'Spain', 'Portugal', 'United Kingdom',
-    'Cameroon', 'Canada', 'United States', 'Brazil', 'India', 'Cameroon'
+  // ✅ City
+  final TextEditingController _cityController = TextEditingController();
+
+  final List<String> _cities = [
+    'Berlin',
+    'Munich',
+    'Hamburg',
+    'Cologne',
+    'Frankfurt',
+    'Stuttgart',
+    'Dusseldorf',
+    'Dortmund',
+    'Essen',
+    'Leipzig',
+    'Bremen',
+    'Dresden',
+    'Hanover',
+    'Nuremberg',
+    'Paris',
+    'Lyon',
+    'Marseille',
+    'Zurich',
+    'Geneva',
+    'Vienna',
+    'Brussels',
+    'Amsterdam',
+    'Rotterdam',
+    'Milan',
+    'Rome',
+    'Madrid',
+    'Barcelona',
+    'Lisbon',
+    'London',
+    'Manchester',
+    'Cambridge',
+    'Toronto',
+    'Montreal',
+    'Vancouver',
+    'New York',
+    'San Francisco',
+    'Boston',
   ];
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
-  final TextEditingController _postleitzahlController = TextEditingController();
-  final TextEditingController _houseNummerController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+  TextEditingController();
+
+  // ✅ Street number + Postal code
+  final TextEditingController _streetNumberController = TextEditingController(); // No.
+  final TextEditingController _postalCodeController = TextEditingController();   // Postal code
+
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
 
-  String? firstNameError;
-  String? lastNameError;
   String? emailError;
   String? passwordError;
-  String? postleitzahlError;
-  String? houseNummerError;
-  String? streetError;
+  String? postalCodeError;
+  String? houseNumberError;
 
   @override
   void dispose() {
     _birthdayController.dispose();
-    _countryController.dispose();
+    _cityController.dispose();
 
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
 
-    _postleitzahlController.dispose();
-    _houseNummerController.dispose();
+    _streetNumberController.dispose();
+    _postalCodeController.dispose();
     _streetController.dispose();
 
     _firstNameController.dispose();
@@ -78,15 +115,32 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
     }
   }
 
+  // ✅ NOUVELLE VALIDATION: house number
+  String? validateHouseNumber(String value) {
+    final v = value.trim();
+    if (v.isEmpty) return "House number is required";
+    // accepte 1 à 5 chiffres (ex: 2, 12, 123, 1234, 12345)
+    if (!RegExp(r'^\d{1,5}$').hasMatch(v)) {
+      return "Invalid house number";
+    }
+    return null;
+  }
+
   void validateInputs() {
     setState(() {
       emailError = Validators.validateEmail(_emailController.text);
+
       passwordError = Validators.validatePasswords(
         _passwordController.text,
         _confirmPasswordController.text,
       );
-      postleitzahlError = Validators.validatePostleitzahl(_postleitzahlController.text);
-      houseNummerError = Validators.validatePostleitzahl(_houseNummerController.text);
+
+      // ✅ House number (No.) -> nouvelle validation
+      houseNumberError = validateHouseNumber(_streetNumberController.text);
+
+      // ✅ Postal code -> validation postleitzahl (ok)
+      postalCodeError =
+          Validators.validatePostleitzahl(_postalCodeController.text);
     });
   }
 
@@ -107,10 +161,11 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Header
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    Container(
+                    SizedBox(
                       height: 70,
                       child: Padding(
                         padding: const EdgeInsets.all(10),
@@ -129,7 +184,9 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold,
-                                color: isDark ? const Color(0xFFE8ECF3) : Colors.black,
+                                color: isDark
+                                    ? const Color(0xFFE8ECF3)
+                                    : Colors.black,
                               ),
                             ),
                           ],
@@ -178,20 +235,14 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: const Color(0xFF1D4ED8), width: 1.5),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _firstNameController,
-                          style: TextStyle(color: fieldText),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "First Name",
-                            hintStyle: TextStyle(color: hintText, fontSize: 16),
-                          ),
-                        ),
-                      ),
-                    ],
+                  child: TextField(
+                    controller: _firstNameController,
+                    style: TextStyle(color: fieldText),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "First Name",
+                      hintStyle: TextStyle(color: hintText, fontSize: 16),
+                    ),
                   ),
                 ),
 
@@ -206,26 +257,20 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: const Color(0xFF1D4ED8), width: 1.5),
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _lastNameController,
-                          style: TextStyle(color: fieldText),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "Last Name",
-                            hintStyle: TextStyle(color: hintText, fontSize: 16),
-                          ),
-                        ),
-                      ),
-                    ],
+                  child: TextField(
+                    controller: _lastNameController,
+                    style: TextStyle(color: fieldText),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Last Name",
+                      hintStyle: TextStyle(color: hintText, fontSize: 16),
+                    ),
                   ),
                 ),
 
                 const SizedBox(height: 25),
 
-                // Street + No.
+                // Street + House No.
                 Row(
                   children: [
                     Expanded(
@@ -261,14 +306,14 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                           border: Border.all(color: const Color(0xFF1D4ED8), width: 1.5),
                         ),
                         child: TextField(
-                          controller: _postleitzahlController,
+                          controller: _streetNumberController,
                           keyboardType: TextInputType.number,
                           style: TextStyle(color: fieldText),
                           decoration: InputDecoration(
                             border: InputBorder.none,
                             hintText: "No.",
                             hintStyle: TextStyle(color: hintText, fontSize: 16),
-                            errorText: postleitzahlError,
+                            errorText: houseNumberError,
                           ),
                         ),
                       ),
@@ -288,29 +333,30 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                     border: Border.all(color: const Color(0xFF1D4ED8), width: 1.5),
                   ),
                   child: TextField(
-                    controller: _houseNummerController,
+                    controller: _postalCodeController,
                     keyboardType: TextInputType.number,
                     style: TextStyle(color: fieldText),
                     decoration: InputDecoration(
                       border: InputBorder.none,
                       hintText: "Postal code",
                       hintStyle: TextStyle(color: hintText, fontSize: 16),
-                      errorText: houseNummerError,
+                      errorText: postalCodeError,
                     ),
                   ),
                 ),
 
                 const SizedBox(height: 25),
 
-                // Country
+                // City (Autocomplete)
                 Autocomplete<String>(
                   optionsBuilder: (TextEditingValue value) {
                     if (value.text.isEmpty) return const Iterable<String>.empty();
-                    return _countries.where((country) =>
-                        country.toLowerCase().startsWith(value.text.toLowerCase()));
+                    return _cities.where((c) =>
+                        c.toLowerCase().startsWith(value.text.toLowerCase()));
                   },
-                  fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-                    _countryController.text = controller.text;
+                  fieldViewBuilder:
+                      (context, controller, focusNode, onFieldSubmitted) {
+                    _cityController.text = controller.text;
                     return Container(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       height: 55,
@@ -328,19 +374,17 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                               style: TextStyle(color: fieldText),
                               decoration: InputDecoration(
                                 border: InputBorder.none,
-                                hintText: "Country",
+                                hintText: "City",
                                 hintStyle: TextStyle(color: hintText, fontSize: 16),
                               ),
                             ),
                           ),
-                          Icon(Icons.flag_outlined, color: iconColor, size: 24),
+                          Icon(Icons.location_city_outlined, color: iconColor, size: 24),
                         ],
                       ),
                     );
                   },
-                  onSelected: (selection) {
-                    _countryController.text = selection;
-                  },
+                  onSelected: (selection) => _cityController.text = selection,
                 ),
 
                 const SizedBox(height: 25),
@@ -428,7 +472,7 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                           style: TextStyle(color: fieldText),
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: "Passwort",
+                            hintText: "Password",
                             hintStyle: TextStyle(color: hintText, fontSize: 16),
                             errorText: passwordError,
                           ),
@@ -459,7 +503,7 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                           style: TextStyle(color: fieldText),
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: "Confirm Password ",
+                            hintText: "Confirm Password",
                             hintStyle: TextStyle(color: hintText, fontSize: 16),
                             errorText: passwordError,
                           ),
@@ -473,89 +517,85 @@ class _PageRegistrierenState extends State<PageRegistrieren> {
                 const SizedBox(height: 35),
 
                 // Sign up button
-                Container(
+                SizedBox(
                   width: double.infinity,
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF4B6BFB).withOpacity(0.3),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
-                  child: SizedBox(
-                    height: 55,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        validateInputs();
+                  height: 55,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      validateInputs();
 
-                        if (emailError != null ||
-                            passwordError != null ||
-                            postleitzahlError != null ||
-                            houseNummerError != null) {
-                          return;
+                      if (emailError != null ||
+                          passwordError != null ||
+                          houseNumberError != null ||
+                          postalCodeError != null) {
+                        return;
+                      }
+
+                      try {
+                        final cred = await FirebaseAuth.instance
+                            .createUserWithEmailAndPassword(
+                          email: _emailController.text.trim(),
+                          password: _passwordController.text.trim(),
+                        );
+
+                        final uid = cred.user!.uid;
+
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(uid)
+                            .set({
+                          'uid': uid,
+                          'email': _emailController.text.trim(),
+                          'firstName': _firstNameController.text.trim(),
+                          'lastName': _lastNameController.text.trim(),
+                          'street': _streetController.text.trim(),
+                          'streetNumber': _streetNumberController.text.trim(),
+                          'postalCode': _postalCodeController.text.trim(),
+                          'city': _cityController.text.trim(),
+                          'birthday': _birthdayController.text.trim(),
+                          'createdAt': FieldValue.serverTimestamp(),
+                          'loginCount': 0,
+                          'lastLoginAt': FieldValue.serverTimestamp(),
+                        });
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => const Navigation()),
+                        );
+                      } on FirebaseAuthException catch (e) {
+                        String msg = "Registration failed";
+
+                        if (e.code == 'email-already-in-use') {
+                          msg = "This email is already used. Please login.";
+                        } else if (e.code == 'invalid-email') {
+                          msg = "Invalid email address.";
+                        } else if (e.code == 'weak-password') {
+                          msg = "Password is too weak.";
                         }
 
-                        try {
-                          final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-                            email: _emailController.text.trim(),
-                            password: _passwordController.text.trim(),
-                          );
-
-                          final uid = cred.user!.uid;
-
-                          await FirebaseFirestore.instance.collection('users').doc(uid).set({
-                            'uid': uid,
-                            'email': _emailController.text.trim(),
-                            'firstName': _firstNameController.text.trim(),
-                            'lastName': _lastNameController.text.trim(),
-                            'street': _streetController.text.trim(),
-                            'streetNumber': _postleitzahlController.text.trim(),
-                            'postalCode': _houseNummerController.text.trim(),
-                            'country': _countryController.text.trim(),
-                            'birthday': _birthdayController.text.trim(),
-                            'createdAt': FieldValue.serverTimestamp(),
-                          });
-
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => const Navigation()),
-                          );
-                        } on FirebaseAuthException catch (e) {
-                          String msg = "Registration failed";
-
-                          if (e.code == 'email-already-in-use') {
-                            msg = "This email is already used. Please login.";
-                          } else if (e.code == 'invalid-email') {
-                            msg = "Invalid email address.";
-                          } else if (e.code == 'weak-password') {
-                            msg = "Password is too weak.";
-                          }
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(msg)),
-                          );
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("An error occurred. Please try again.")),
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4B6BFB),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        elevation: 0,
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(msg)),
+                        );
+                      } catch (_) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("An error occurred. Please try again.")),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4B6BFB),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      child: const Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      "Sign Up",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),

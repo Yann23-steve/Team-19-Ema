@@ -7,9 +7,6 @@ import '../jobs/job_details_page.dart';
 class MyAssignmentsPage extends StatelessWidget {
   const MyAssignmentsPage({super.key});
 
-  // =============================
-  // 🔴 Cancel / Remove shift
-  // =============================
   Future<void> _cancelJob(
       BuildContext context,
       String jobId,
@@ -32,14 +29,12 @@ class MyAssignmentsPage extends StatelessWidget {
           throw Exception("Job not found");
         }
 
-        // 1️⃣ remettre le job en open
         tx.update(jobRef, {
           'status': 'open',
           'takenBy': null,
           'takenAt': null,
         });
 
-        // 2️⃣ supprimer l’assignement utilisateur
         tx.delete(assignmentRef);
       });
 
@@ -106,7 +101,6 @@ class MyAssignmentsPage extends StatelessWidget {
             ),
           ),
 
-          // ❌ Cancel button
           IconButton(
             icon: const Icon(Icons.close, color: Colors.redAccent),
             onPressed: () {

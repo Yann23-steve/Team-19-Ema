@@ -160,7 +160,7 @@ class _HoursEditorPageState extends State<HoursEditorPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Hours saved ✅")),
+          const SnackBar(content: Text("Hours saved ")),
         );
         Navigator.pop(context);
       }
@@ -204,7 +204,7 @@ class _HoursEditorPageState extends State<HoursEditorPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Deleted ✅")),
+          const SnackBar(content: Text("Deleted ")),
         );
         Navigator.pop(context);
       }

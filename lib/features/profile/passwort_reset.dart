@@ -61,7 +61,6 @@ class _PasswortResetPageState extends State<PasswortResetPage> {
     setState(() => _loading = true);
 
     try {
-      // 1) Re-authentication (important pour updatePassword)
       final email = user.email;
       if (email == null || email.isEmpty) {
         throw FirebaseAuthException(
@@ -75,14 +74,11 @@ class _PasswortResetPageState extends State<PasswortResetPage> {
 
       await user.reauthenticateWithCredential(credential);
 
-      // 2) Update password in Firebase Auth
       await user.updatePassword(newPw);
 
-      // 3) Optionnel: refresh token / user
       await user.reload();
 
-      // 4) Save in Firestore (NE PAS enregistrer le mot de passe en clair!)
-      // -> On enregistre uniquement un flag / date de changement
+
       await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
         'passwordUpdatedAt': FieldValue.serverTimestamp(),
         'hasCustomPassword': true,
@@ -90,7 +86,7 @@ class _PasswortResetPageState extends State<PasswortResetPage> {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Password updated ✅")),
+        const SnackBar(content: Text("Password updated ")),
       );
       Navigator.pop(context);
     } on FirebaseAuthException catch (e) {

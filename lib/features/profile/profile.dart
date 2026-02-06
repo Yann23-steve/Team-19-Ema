@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// ✅ AJOUTS PHOTO (sans Firebase Storage)
+
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:io';
@@ -25,7 +25,6 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   User? user;
 
-  // ✅ AJOUTS PHOTO
   final ImagePicker _picker = ImagePicker();
 
   final List<String> _cities = const [
@@ -47,7 +46,6 @@ class _ProfilePageState extends State<ProfilePage> {
     user = FirebaseAuth.instance.currentUser;
   }
 
-  // ✅ AJOUTS PHOTO
   Future<void> _showPhotoPickerSheet() async {
     if (user == null) return;
 
@@ -88,7 +86,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // ✅ AJOUTS PHOTO (Firestore only, base64)
   Future<void> _pickAndSaveToFirestore(ImageSource source) async {
     if (user == null) return;
 
@@ -213,7 +210,6 @@ class _ProfilePageState extends State<ProfilePage> {
           String email = "your.email@example.com";
           String preferredLocation = "";
 
-          // ✅ AJOUT PHOTO
           String photoBase64 = "";
 
           if (snapshot.hasData && snapshot.data!.exists) {
@@ -226,7 +222,6 @@ class _ProfilePageState extends State<ProfilePage> {
             email = (data['email'] ?? user!.email ?? '').toString();
             preferredLocation = (data['preferredLocation'] ?? '').toString();
 
-            // ✅ AJOUT PHOTO
             photoBase64 = (data['photoBase64'] ?? '').toString();
           } else {
             email = user!.email ?? "your.email@example.com";
@@ -305,7 +300,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 20),
 
                   // ===== Profile card =====
-                  // ✅ MODIF MINIMALE: clic zone rouge -> choisir photo
                   InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: _showPhotoPickerSheet,

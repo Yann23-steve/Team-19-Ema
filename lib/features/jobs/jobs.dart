@@ -86,11 +86,8 @@ class _JobsPageState extends State<JobsPage> {
               stream: FirebaseFirestore.instance
                   .collection('jobs')
                   .where('status', isEqualTo: 'open')
-              // ✅ TEMPORAIRE: enlève orderBy pour éviter l’index bloquant
-              // .orderBy('createdAt', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
-                // ✅ affiche l’erreur (sinon tu vois juste un loader infini)
                 if (snapshot.hasError) {
                   return Center(
                     child: Text(

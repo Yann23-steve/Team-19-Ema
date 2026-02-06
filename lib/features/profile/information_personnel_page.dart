@@ -75,7 +75,7 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Informations updated ✅")),
+        const SnackBar(content: Text("Informations updated ")),
       );
     } catch (e) {
       if (!mounted) return;
@@ -123,8 +123,6 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
 
             final data = snapshot.data!.data() as Map<String, dynamic>;
 
-            // ✅ IMPORTANT : on initialise SEULEMENT quand on a les data Firestore
-            // et on évite d’écraser pendant que l’utilisateur écrit.
             if (!_initialized && !_isEditing) {
               _fillControllers(data, user.email ?? "");
               _initialized = true;
@@ -439,7 +437,6 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
     );
   }
 
-  // ✅ si enabled=false => on affiche un Text au lieu d’un TextField
   Widget _fieldRow({
     required BuildContext context,
     required String label,

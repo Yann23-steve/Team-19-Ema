@@ -8,12 +8,11 @@ import 'firebase_options.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 🔥 Initialisation Firebase
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // 🎨 Charger le thème sauvegardé (dark / light)
+
   await loadSavedTheme();
 
   runApp(const MyApp());
