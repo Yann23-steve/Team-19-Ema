@@ -146,7 +146,7 @@ class WorkPage extends StatelessWidget {
               title: "Work hours & salary",
               subtitle: "See totals, edit or delete entries",
               icon: Icons.payments_outlined,
-              accent: const Color(0xFF059669),
+              accent: const Color(0xFF1D4ED8),
               onTap: () {
                 if (user == null) return;
                 Navigator.push(
