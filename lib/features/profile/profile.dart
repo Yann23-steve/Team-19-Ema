@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// ✅ AJOUTS PHOTO (sans Firebase Storage)
+import 'dart:convert';
+import 'dart:typed_data';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img;
+
 import '../../app/app_theme.dart';
 import '../auth/landing_page.dart';
 import 'information_personnel_page.dart';
-
-// ✅ AJOUT: import de la page reset password
+import 'notification_page.dart';
 import 'passwort_reset.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -19,7 +25,9 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   User? user;
 
-  // ✅ AJOUT: liste de villes (modifiable)
+  // ✅ AJOUTS PHOTO
+  final ImagePicker _picker = ImagePicker();
+
   final List<String> _cities = const [
     "Berlin",
     "Frankfurt",
@@ -39,7 +47,94 @@ class _ProfilePageState extends State<ProfilePage> {
     user = FirebaseAuth.instance.currentUser;
   }
 
-  // ✅ AJOUT: dialog pour choisir + enregistrer dans Firestore
+  // ✅ AJOUTS PHOTO
+  Future<void> _showPhotoPickerSheet() async {
+    if (user == null) return;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (_) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library_outlined),
+                title: const Text("Choose from gallery"),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await _pickAndSaveToFirestore(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera_outlined),
+                title: const Text("Take a photo"),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await _pickAndSaveToFirestore(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.close),
+                title: const Text("Cancel"),
+                onTap: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // ✅ AJOUTS PHOTO (Firestore only, base64)
+  Future<void> _pickAndSaveToFirestore(ImageSource source) async {
+    if (user == null) return;
+
+    try {
+      final XFile? picked = await _picker.pickImage(source: source);
+      if (picked == null) return;
+
+      final bytes = await File(picked.path).readAsBytes();
+
+      final decoded = img.decodeImage(bytes);
+      if (decoded == null) {
+        throw Exception("Image decode failed");
+      }
+
+      // resize pour respecter la limite Firestore (1MB/doc)
+      final resized = img.copyResize(decoded, width: 256);
+
+      // compress jpeg
+      final jpgBytes = Uint8List.fromList(img.encodeJpg(resized, quality: 70));
+
+      final base64Str = base64Encode(jpgBytes);
+
+      await FirebaseFirestore.instance.collection('users').doc(user!.uid).set({
+        'photoBase64': base64Str,
+        'photoUpdatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Profile photo saved ✅")),
+      );
+    } on FirebaseException catch (e) {
+      debugPrint("Firestore error: ${e.code} ${e.message}");
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Firestore: ${e.code}")),
+      );
+    } catch (e) {
+      debugPrint("Error: $e");
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Could not save photo")),
+      );
+    }
+  }
+
   Future<void> _openPreferredLocationDialog(String currentValue) async {
     if (user == null) return;
 
@@ -116,9 +211,10 @@ class _ProfilePageState extends State<ProfilePage> {
         builder: (context, snapshot) {
           String fullName = "Your Name";
           String email = "your.email@example.com";
-
-          // ✅ AJOUT: preferred location
           String preferredLocation = "";
+
+          // ✅ AJOUT PHOTO
+          String photoBase64 = "";
 
           if (snapshot.hasData && snapshot.data!.exists) {
             final data = snapshot.data!.data() as Map<String, dynamic>;
@@ -128,9 +224,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
             fullName = "$firstName $lastName".trim();
             email = (data['email'] ?? user!.email ?? '').toString();
-
-            // ✅ AJOUT: lire preferredLocation
             preferredLocation = (data['preferredLocation'] ?? '').toString();
+
+            // ✅ AJOUT PHOTO
+            photoBase64 = (data['photoBase64'] ?? '').toString();
           } else {
             email = user!.email ?? "your.email@example.com";
           }
@@ -208,83 +305,101 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 20),
 
                   // ===== Profile card =====
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 56,
-                          height: 56,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFEFF3FF),
-                            borderRadius: BorderRadius.circular(14),
+                  // ✅ MODIF MINIMALE: clic zone rouge -> choisir photo
+                  InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: _showPhotoPickerSheet,
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
-                          child: const Icon(
-                            Icons.person,
-                            color: Color(0xFF1D4ED8),
-                            size: 30,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                fullName.isEmpty ? "Your Name" : fullName,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                email.isEmpty
-                                    ? "your.email@example.com"
-                                    : email,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Edit profile – coming soon"),
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(10),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 56,
+                            height: 56,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF5F6FA),
-                              borderRadius: BorderRadius.circular(12),
+                              color: const Color(0xFFEFF3FF),
+                              borderRadius: BorderRadius.circular(14),
                             ),
-                            child: const Icon(
-                              Icons.edit,
-                              size: 18,
-                              color: Colors.grey,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(14),
+                              child: photoBase64.trim().isNotEmpty
+                                  ? Image.memory(
+                                base64Decode(photoBase64),
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => const Icon(
+                                  Icons.person,
+                                  color: Color(0xFF1D4ED8),
+                                  size: 30,
+                                ),
+                              )
+                                  : const Icon(
+                                Icons.person,
+                                color: Color(0xFF1D4ED8),
+                                size: 30,
+                              ),
                             ),
                           ),
-                        )
-                      ],
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  fullName.isEmpty ? "Your Name" : fullName,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  email.isEmpty
+                                      ? "your.email@example.com"
+                                      : email,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text("Edit profile – coming soon"),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF5F6FA),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: const Icon(
+                                Icons.edit,
+                                size: 18,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
 
@@ -562,7 +677,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   const SizedBox(height: 14),
 
-                  // ✅ Personal information (cliquable)
                   _settingsItem(
                     context: context,
                     icon: Icons.person_outline,
@@ -582,7 +696,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   const SizedBox(height: 14),
 
-                  // ✅ AJOUT: Preferred location cliquable + affiche la valeur Firestore
                   _settingsItem(
                     context: context,
                     icon: Icons.location_on_outlined,
@@ -606,11 +719,18 @@ class _ProfilePageState extends State<ProfilePage> {
                     iconColor: const Color(0xFF059669),
                     title: "Notifications",
                     subtitle: "Job alerts & reminders",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NotificationsPage(),
+                        ),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 14),
 
-                  // ✅ MODIF MINIMALE: ouvrir la page PasswortResetPage
                   _settingsItem(
                     context: context,
                     icon: Icons.lock_outline,
@@ -630,7 +750,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   const SizedBox(height: 14),
 
-                  // ===== About =====
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -661,7 +780,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   const SizedBox(height: 18),
 
-                  // ===== Logout =====
                   InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: () async {
