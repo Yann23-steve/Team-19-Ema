@@ -1,16 +1,57 @@
-# job_suche
+# JobSuche – Mobile Jobvermittlung App
 
-A new Flutter project.
+JobSuche ist eine mobile Anwendung, die im Rahmen eines Softwareprojekts entwickelt wurde.  
+Ziel der Anwendung ist es, Arbeitgeber und Bewerber über eine digitale Plattform miteinander zu verbinden und die Jobsuche sowie den Bewerbungsprozess zu vereinfachen.
 
-## Getting Started
+## Über das Projekt
 
-This project is a starting point for a Flutter application.
+Die Anwendung wurde mit Flutter und Dart entwickelt und nutzt Firebase für Backend-Funktionen.
 
-A few resources to get you started if this is your first Flutter project:
+Im Rahmen des Projekts wurden unter anderem Benutzeroberflächen entwickelt, Navigationsstrukturen umgesetzt und verschiedene Funktionen für die Interaktion zwischen Nutzern und der Anwendung integriert.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Das Projekt dient gleichzeitig der praktischen Anwendung und Vertiefung meiner Kenntnisse in der mobilen Softwareentwicklung.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Technologien
+
+- Flutter
+- Dart
+- Firebase
+- Git & GitHub
+- Android / iOS
+
+## Funktionen
+
+Zu den entwickelten bzw. vorgesehenen Funktionen gehören:
+
+- Benutzerregistrierung und Login
+- Navigation innerhalb der Anwendung
+- Benutzerfreundliche mobile Benutzeroberfläche
+- Verwaltung von Benutzerdaten
+- Darstellung von Stellenangeboten
+- Unterstützung des Bewerbungsprozesses
+- Firebase-Anbindung
+
+## Projektstruktur
+
+Der Quellcode der Flutter-Anwendung befindet sich hauptsächlich im Verzeichnis:
+
+`lib/`
+
+Weitere Verzeichnisse enthalten die plattformspezifischen Konfigurationen für Android, iOS, Web und weitere unterstützte Plattformen.
+
+## Installation
+
+### Voraussetzungen
+
+- Flutter SDK
+- Dart
+- Android Studio oder Visual Studio Code
+- Git
+
+### Repository klonen
+
+```bash
+git clone https://github.com/Yann23-steve/Team-19-Ema.git
+cd Team-19-Ema
+flutter pub get
+flutter run
